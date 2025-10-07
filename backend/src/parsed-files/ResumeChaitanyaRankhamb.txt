@@ -1,0 +1,39 @@
+AThird Year student in (IT) department at
+Vishwakarma Institute of Technology, Pune.
+CONTACT PROFILE
+4919860358059 Enthusiastic and detail-oriented Information Technology student with a solid
+A foundation in both problem-solving and ful-stack web development. Proficient
+LEE ECE EEE] in HTML, CSS, Tailwind, React (JSX), Node js, Express, MongoDB, and MySQL
+FUPROIPNURURNPRN acl ional experience in API testing using Postman. Strong analytical and
+0 cme he logical skills developed through continuous practice of Data Structures &
+er Inia Nagar Bbc Algorithms on LeetCode. Highly motivated to lear and adapt quickly, with a
+O lense Em: Keen interest in applying technical knowledge to real-world projects during a
+§ Web Development Internship
+EDUCATION EXPERIENCE ON PROJECTS
+2023 - 2027 streamify
+ISHWAKARMA INSTITUTE OF «Sua o sponse onan spate cong TH AP
+OEE splay posters, trailors, ratings, and cast details.
+Implemented custom inline movie player with hover scaling posters,
+a hidden scrollbars, and "See More” pagination.
+© Degree of B.Techin « Developed search & filter features with optimized clientside state
+plc Technology. management for smooth navigation.
++ CGPA: 801 + Designed scalable structure for future Integration of backend
+streaming and user authentication.
+Technologies: HTML, CSS, Tailwind, React Js, Node Js, Express Js
+MongoDs, git github
+SKILLS
+_— Facial Expression Detection & Music Player
+LANGUAGES TOOLS + Bull a realtime facial expression recognition system using webcam
+rn + Taiwind input and a pretrained CN mode
+ig 5 en + Integrated emotion detection with a music player to auto-selec
+6 Tren ommn tcbassdondotectodmoos, CC
+vy | bees Optimized for low-latency inference and responsive. playbac
+T = ensuring smooth user experience.
+«css + MongoDb + Developed cross stack integration (Python backend + JavaScript Ui)
+«sau + PostMan for seamless Interaction.
+. Git
++ GitHub Technologies: Python, OpenCY, retrained CNN Model, Frontend Ut
+TensorFlow/Keras, JavaScript Integration
+GitHub Linke: https://github.com/ChaitanyaRankhambsa
+
+

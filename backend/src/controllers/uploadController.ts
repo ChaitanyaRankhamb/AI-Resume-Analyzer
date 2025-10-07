@@ -4,6 +4,9 @@ import path from "path";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pdfParse = require("pdf-parse");
 import mammoth = require("mammoth"); // For DOCX parsing
+import Tesseract from "tesseract.js"; // OCR for scanned PDFs
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const pdf = require("pdf-poppler");
 
 export async function getStatus(_req: Request, res: Response): Promise<void> {
   res.json({ ok: true });
@@ -31,11 +34,81 @@ export async function uploadResume(req: Request, res: Response): Promise<void> {
     let txtName = file.originalname;
 
     if (file.mimetype === "application/pdf") {
-      // PDF parsing
+      // Try text extraction first
       const dataBuffer = fs.readFileSync(file.path);
       const pdfData = await pdfParse(dataBuffer);
-      text = pdfData.text;
-      txtName = txtName.replace(/\.pdf$/i, ".txt");
+
+      if (pdfData.text.trim().length > 0) {
+        // Text-based PDF - extract text directly
+        text = pdfData.text;
+        txtName = txtName.replace(/\.pdf$/i, ".txt");
+      } else {
+        // Scanned PDF - use OCR
+        console.log("Detected scanned PDF → using OCR...");
+
+        try {
+          // Create temp directory
+          const tempDir = path.resolve(__dirname, "../temp-images");
+          if (!fs.existsSync(tempDir)) {
+            fs.mkdirSync(tempDir, { recursive: true });
+          }
+
+          // Convert PDF pages to images using pdf-poppler
+          const options = {
+            format: "png",
+            out_dir: tempDir,
+            out_prefix: "page",
+            page: null, // Convert all pages
+            density: 300, // High quality
+            width: 2000,
+            height: 2000,
+          };
+
+          await pdf.convert(file.path, options);
+
+          // Initialize Tesseract worker
+          const worker = await Tesseract.createWorker("eng");
+
+          // Get all generated image files
+          const files = fs
+            .readdirSync(tempDir)
+            .filter((file) => file.endsWith(".png"));
+
+          // Process each page image with OCR
+          for (const imageFile of files) {
+            const imagePath = path.join(tempDir, imageFile);
+            const {
+              data: { text: pageText },
+            } = await worker.recognize(imagePath);
+            text += pageText + "\n\n";
+
+            // Clean up the image file
+            if (fs.existsSync(imagePath)) {
+              fs.unlinkSync(imagePath);
+            }
+          }
+
+          await worker.terminate();
+
+          // Clean up temp directory
+          if (fs.existsSync(tempDir)) {
+            fs.rmSync(tempDir, { recursive: true, force: true });
+          }
+
+          if (text.trim().length === 0) {
+            throw new Error(
+              "No text could be extracted from the PDF. The image quality might be too low."
+            );
+          }
+
+          txtName = txtName.replace(/\.pdf$/i, ".txt");
+        } catch (ocrError) {
+          console.error("OCR failed:", ocrError);
+          throw new Error(
+            "Failed to extract text from scanned PDF. Please ensure the PDF is not corrupted and try again."
+          );
+        }
+      }
     } else if (
       file.mimetype ===
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || // .docx
@@ -44,7 +117,9 @@ export async function uploadResume(req: Request, res: Response): Promise<void> {
       // DOC/DOCX parsing
       if (file.mimetype === "application/msword") {
         // Optional: For .doc files, you may need another parser or conversion to .docx first
-        throw new Error(".doc files are not supported yet. Please upload .docx");
+        throw new Error(
+          ".doc files are not supported yet. Please upload .docx"
+        );
       }
 
       const buffer = fs.readFileSync(file.path);
@@ -76,6 +151,8 @@ export async function uploadResume(req: Request, res: Response): Promise<void> {
       console.log("Uploaded file deleted due to conversion failure.");
     }
 
-    res.status(500).json({ error: (error as Error).message || "Failed to parse file" });
+    res
+      .status(500)
+      .json({ error: (error as Error).message || "Failed to parse file" });
   }
 }
