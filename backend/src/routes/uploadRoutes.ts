@@ -2,7 +2,7 @@ import { Router } from "express";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import { uploadResume } from "../controllers/uploadController";
+import { uploadResume, getStatus } from "../controllers/uploadController";
 
 const router = Router();
 
@@ -27,6 +27,8 @@ const upload = multer({
   storage,
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
 });
+
+router.get("/status", getStatus);
 
 // Accept either `file` or `resume` fields
 router.post("/upload", upload.any(), uploadResume);

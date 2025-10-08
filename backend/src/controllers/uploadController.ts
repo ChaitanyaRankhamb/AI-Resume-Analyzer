@@ -3,9 +3,13 @@ import { parseResume } from "../services/resumeParseServices";
 import { cleanAndExtractKeywords } from "../services/nlpServices";
 import { matchKeywordsFromResume } from "../services/matchedKeywordsServices";
 
+export async function getStatus(_req: Request, res: Response): Promise<void> {
+  res.json({ ok: true });
+}
+
 export async function uploadResume(req: Request, res: Response) {
   try {
-    const file = (req as any).file || ((req as any).files?.[0]);
+    const file = (req as any).file || (req as any).files?.[0];
     if (!file) return res.status(400).json({ error: "No file uploaded" });
 
     // Step 1: Parse file → get raw text
@@ -18,7 +22,7 @@ export async function uploadResume(req: Request, res: Response) {
 
     res.json({
       message: "File processed successfully",
-      keywords
+      keywords,
     });
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
