@@ -15,6 +15,9 @@ export interface UserRepositories {
   // find user by email
   findUserByEmail(email: string) : Promise<User | null>;
 
+  // find user by googleId
+  findUserByGoogleId(googleId: string) : Promise<User | null>;
+
   // update user
   updateUser(user: User) : Promise<User>;
 }

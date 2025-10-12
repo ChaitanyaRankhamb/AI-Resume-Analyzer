@@ -156,10 +156,10 @@ const HowItWorks: React.FC = () => {
             <span>Simple Process</span>
           </motion.div>
 
-          <motion.h2
+        <motion.h2
             className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 leading-tight"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
             viewport={{ once: true }}
           >
@@ -170,19 +170,19 @@ const HowItWorks: React.FC = () => {
             <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
               Works
             </span>
-          </motion.h2>
+        </motion.h2>
 
-          <motion.p
+        <motion.p
             className="text-muted-foreground text-lg sm:text-xl max-w-3xl mx-auto leading-relaxed"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.5 }}
             viewport={{ once: true }}
-          >
+        >
             Transform your resume into an AI-powered career roadmap in three
             simple, powerful steps. Our advanced technology makes resume
             optimization effortless and effective.
-          </motion.p>
+        </motion.p>
         </motion.div>
 
         {/* Premium Steps Grid */}
@@ -306,7 +306,7 @@ const HowItWorks: React.FC = () => {
 
                 {/* Corner Accent */}
                 <div className="absolute top-4 right-4 w-3 h-3 bg-primary/30 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </div>
+                  </div>
 
               {/* Connecting Arrow (Desktop Only) */}
               {index < steps.length - 1 && (

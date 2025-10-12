@@ -9,7 +9,10 @@ export interface IUser {
   _id?: string | null | Types.ObjectId;
   username: string;
   email: string;
-  password: string;
+  password?: string | null;
+  googleId?: string | null;
+  googleAccessToken?: string | null;
+  googleRefreshToken?: string | null;
   role?: UserRole;
   isVerified?: boolean;
   verifyCode?: number | null;
@@ -21,7 +24,10 @@ export class User implements IUser {
   _id: string | null;
   username: string;
   email: string;
-  password: string;
+  password: string | null;
+  googleId: string | null;
+  googleAccessToken: string | null;
+  googleRefreshToken: string | null;
   role: UserRole;
   isVerified: boolean;
   verifyCode: number | null;
@@ -34,7 +40,10 @@ export class User implements IUser {
       : user._id.toString();
     this.username = user.username ?? "";
     this.email = user.email ?? "";
-    this.password = user.password ?? "";
+    this.password = user.password ?? null;
+    this.googleId = user.googleId ?? null;
+    this.googleAccessToken = user.googleAccessToken ?? null;
+    this.googleRefreshToken = user.googleRefreshToken ?? null;
     this.role = user.role ?? "user";
     this.isVerified = user.isVerified ?? false;
     this.verifyCode = user.verifyCode ?? null;

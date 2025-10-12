@@ -1,4 +1,3 @@
-import { queryObjects } from 'v8';
 import { User } from '../../entities/User';
 import { UserModel } from '../../models/UserModel';
 import { UserRepositories } from './../UserRepositories';
@@ -8,9 +7,8 @@ export class UserRepositoryMongo implements UserRepositories {
   async createUser(user: User): Promise<User> {
     const newUserDoc = await UserModel.create(user);
   
-    // ✅ Safely convert _id to string for your entity
     return new User({
-      ...newUserDoc.toObject(),
+      ...newUserDoc,
       _id: (newUserDoc._id as Types.ObjectId)?.toString() ?? null,
     });
   }
@@ -45,24 +43,39 @@ export class UserRepositoryMongo implements UserRepositories {
     });
   }
 
+  async findUserByGoogleId(googleId: string): Promise<User | null> {
+    const userDoc = await UserModel.findOne({ googleId });
+    if (!userDoc) return null;
+
+    return new User({
+      ...userDoc.toObject(),
+      _id: (userDoc._id as Types.ObjectId)?.toString() ?? null,
+    });
+  }
+
   async updateUser(user: User): Promise<User> {
     if (!user._id) {
       throw new Error("Cannot update user without _id");
     }
 
+    // Prepare the update fields - include all updatable fields from your User entity
+    const updateFields: any = {
+      username: user.username,
+      email: user.email,
+      password: user.password,
+      googleId: user.googleId,
+      googleAccessToken: user.googleAccessToken,
+      googleRefreshToken: user.googleRefreshToken,
+      role: user.role,
+      isVerified: user.isVerified,
+      verifyCode: user.verifyCode,
+      isExpiried: user.isExpiried,
+      resumes: user.resumes,
+    };
+
     const updatedUserDoc = await UserModel.findOneAndUpdate(
       { _id: user._id },
-      {
-        $set: {
-          username: user.username,
-          password: user.password,
-          role: user.role,
-          isVerified: user.isVerified,
-          verifyCode: user.verifyCode,
-          isExpiried: user.isExpiried,
-          resumes: user.resumes,
-        },
-      },
+      { $set: updateFields },
       { new: true, runValidators: false }
     );
 

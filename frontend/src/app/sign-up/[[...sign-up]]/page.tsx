@@ -109,9 +109,7 @@ export default function SignUpPage() {
               <div className="font-medium text-destructive mb-2">
                 Please fill in all fields.
               </div>
-              <Button className="mt-2 w-full">
-                OK
-              </Button>
+              <Button className="mt-2 w-full">OK</Button>
             </div>
           ),
         });
@@ -182,6 +180,10 @@ export default function SignUpPage() {
     }
   }
 
+  const handleGoogleAuthentication = () => {
+    window.location.href = "http://localhost:4000/auth/google";
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20 p-4 relative overflow-hidden">
       <motion.div
@@ -234,7 +236,7 @@ export default function SignUpPage() {
             <motion.button
               type="button"
               className="flex items-center justify-center w-full gap-3 py-3 px-4 rounded-xl border border-border bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all duration-300 font-medium shadow-lg hover:shadow-xl group"
-              onClick={() => (window.location.href = "/api/auth/oauth/google")}
+              onClick={handleGoogleAuthentication}
               whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98 }}
             >
