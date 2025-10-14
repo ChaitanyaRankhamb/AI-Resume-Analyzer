@@ -7,8 +7,10 @@ import OAuthRoutes from "./routes/OAuthRoutes"
 import verifyEmailRoutes from "./routes/emailVerificationRoute";
 import { connectDB } from "./config/databast";
 import passport from "passport";
+import cookie_parser from "cookie-parser";
 
 import "./config/googleStatergy"
+import "./config/loginPassport"
 
 dotenv.config();
 
@@ -27,6 +29,7 @@ app.use(
 );
 app.use(express.json());
 app.use(passport.initialize());
+app.use(cookie_parser());
 
 //  Mount your normal API routes
 app.use("/api", uploadRoutes);

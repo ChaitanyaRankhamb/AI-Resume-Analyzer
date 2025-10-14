@@ -2,9 +2,17 @@ import { Request, Response } from "express";
 import { UserRepositoryMongo } from "../repositories/mongo/User";
 import { UserServices } from "../services/authServices";
 import { User } from "../entities/User";
+import passport = require("passport");
+import { UserLoginServices } from "../services/loginAuthServices";
+import {
+  signJwtToken,
+  storeSessionService,
+  storeTokenService,
+} from "../lib/jwt";
 
 const userRepository = new UserRepositoryMongo();
 const userServices = new UserServices(userRepository);
+const userLoginServices = new UserLoginServices(userRepository);
 
 export async function handleSignUpController(req: Request, res: Response) {
   const data = req.body;
@@ -53,6 +61,51 @@ export async function handleSignUpController(req: Request, res: Response) {
     return res.status(500).json({
       success: false,
       message: error?.message || "Error in creating user account",
+      status: 500,
+    });
+  }
+}
+
+export async function handleSignInController(req: Request, res: Response) {
+  const passportUser = req.user as any;
+  const actualUser = passportUser.user; // unwrap
+  const token = passportUser.token;
+
+  if (!actualUser) {
+    return res.status(401).json({
+      success: false,
+      message: "Authentication failed",
+      status: 401,
+    });
+  }
+
+  try {
+    const jwtPayload = {
+      id: (actualUser as any)._id,
+      username: (actualUser as any).username,
+      email: (actualUser as any).email,
+    };
+
+    const token = await signJwtToken(jwtPayload);
+
+    // Pass only the safe user object to the login service
+    const result = await userLoginServices.login({ user: actualUser, token });
+
+    if (result && result.user && result.token) {
+      storeTokenService(res, result.token);
+      storeSessionService(res, result.session);
+
+      return res.redirect(
+        `http://localhost:3000/home?email=${encodeURIComponent(actualUser.email)}`
+      );
+    } else {
+      return res.redirect("/signin-failure");
+    }
+  } catch (error: any) {
+    console.error("Sign-in error:", error);
+    return res.status(500).json({
+      success: false,
+      message: error?.message || "Internal server error during login",
       status: 500,
     });
   }

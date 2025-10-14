@@ -3,6 +3,7 @@ import { userDataProps } from "../controllers/OAuthController";
 import verifyCode from "../lib/verifyCode";
 import expiryDate from "../lib/expiryDate";
 import { User } from "../entities/User";
+import { generateUniqueUsername } from "../lib/generateUniqueUsername";
 
 export class AuthService {
   private userRepository: UserRepositoryMongo;
@@ -26,6 +27,8 @@ export class AuthService {
     const googleId = profile.id;
     const email = profile.emails?.[0]?.value;
     let name = profile.displayName || email?.split("@")[0];
+
+    name = await generateUniqueUsername(name);
 
     if (!email) {
       return { success: false, message: "Email not found in Google profile", status: 400 };

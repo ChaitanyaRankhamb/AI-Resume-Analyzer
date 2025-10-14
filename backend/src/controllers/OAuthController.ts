@@ -9,38 +9,32 @@ export interface userDataProps {
   googleRefreshToken: string | null;
 }
 
-export default function handleGooglePassportStrategyController(
+export default async function handleGooglePassportStrategyController(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
-  passport.authenticate(
-    "google",
-    { failureRedirect: "/signup-failure", session: false },
-    async (err: any, userData: userDataProps) => {
-      if (err || !userData) {
-        return res.redirect(`http://localhost:3000/signup-failure`);
-      }
+  try {
+    const userData = req.user as userDataProps; // <- passport puts it here
+    console.log(userData);
 
-      try {
-        const authService = new AuthService();
-        const result = await authService.handleGoogleUser(userData);
-
-        const email = result.user?.email;
-
-        if (typeof result.redirectUrl === "string") {
-          res.redirect(result.redirectUrl);
-        } else {
-          res.redirect(
-            `http://localhost:3000/verifyCode?email=${encodeURIComponent(
-              email ?? ""
-            )}`
-          );
-        }
-      } catch (error) {
-        console.error("Account creating with Google failed:", error);
-        res.redirect(`http://localhost:3000/signup-failure`);
-      }
+    if (!userData) {
+      return res.redirect("http://localhost:3000/signup-failure");
     }
-  )(req, res, next);
+
+    const authService = new AuthService();
+    const result = await authService.handleGoogleUser(userData);
+
+    const email = result.user?.email;
+    if (typeof result.redirectUrl === "string") {
+      return res.redirect(result.redirectUrl);
+    } else {
+      return res.redirect(
+        `http://localhost:3000/verifyCode?email=${encodeURIComponent(email ?? "")}`
+      );
+    }
+  } catch (error) {
+    console.error("Account creating with Google failed:", error);
+    res.redirect("http://localhost:3000/signup-failure");
+  }
 }

@@ -61,11 +61,14 @@ export default function VerificationForm() {
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:4000/api/auth/email/resendVerify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
+      const res = await fetch(
+        "http://localhost:4000/api/auth/email/resendVerify",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        }
+      );
 
       const data = await res.json();
       if (data.success) {
@@ -115,12 +118,22 @@ export default function VerificationForm() {
 
               {/* Error Message */}
               {error && (
-                <p className="text-sm text-red-500 text-center">{error}</p>
+                <>
+                  <p className="text-sm text-red-500 text-center">{error}</p> 
+                </>
               )}
 
               {/* Success Message */}
               {success && (
-                <p className="text-sm text-green-500 text-center">{success}</p>
+                <>
+                  <p className="text-sm text-green-500 text-center">
+                    {success}
+                  </p>
+                  {typeof window !== "undefined" &&
+                    setTimeout(() => {
+                      window.location.href = "http://localhost:3000/sign-in";
+                    }, 1500)}
+                </>
               )}
 
               <Button

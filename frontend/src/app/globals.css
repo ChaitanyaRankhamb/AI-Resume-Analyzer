@@ -128,3 +128,14 @@
 html {
   scroll-behavior: smooth;
 }
+
+
+/* Hide the built-in eye icon in Chrome, Edge, etc. */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
+input[type="password"]::-webkit-textfield-decoration-container {
+  display: none;
+}

@@ -1,13 +1,11 @@
 "use client";
-
 import * as React from "react";
 import Link from "next/link";
-import { Menu, X, FileText } from "lucide-react";
-import { useTheme } from "next-themes";
-
+import { Menu, FileText } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { ThemeToggle } from "@/components/theme-toggle";
+import isLoggedIn from "./IsLoggedIn";
 
 const navigation = [
   { name: "Home", href: "#hero" },
@@ -16,29 +14,24 @@ const navigation = [
   { name: "Contact", href: "#contact" },
 ];
 
-export function Navbar() {
-  const { theme } = useTheme();
-  const [mounted, setMounted] = React.useState(false);
+export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const [loggedIn, setLoggedIn] = React.useState(false);
 
+  // Fetch logged-in status on mount
   React.useEffect(() => {
-    setMounted(true);
+    const checkLoggedIn = async () => {
+      const result = await isLoggedIn(); // must return a promise
+      setLoggedIn(result);
+    };
+    checkLoggedIn();
   }, []);
 
   const handleSmoothScroll = (href: string) => {
     const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
+    if (element) element.scrollIntoView({ behavior: "smooth", block: "start" });
     setIsMobileMenuOpen(false);
   };
-
-  if (!mounted) {
-    return null;
-  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -75,28 +68,37 @@ export function Navbar() {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
+            {loggedIn ? (
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/profile">Profile</Link>
+              </Button>
+            ) : (
+              <>
+                <Button variant="ghost" size="sm" asChild>
+                  <Link href="/sign-in">Login</Link>
+                </Button>
+                <Button size="sm" className="relative overflow-hidden group" asChild>
+                  <Link href="/sign-up">
+                    <span className="relative z-10">Sign Up</span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                  </Link>
+                </Button>
+              </>
+            )}
             <ThemeToggle />
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/login">Login</Link>
-            </Button>
-            <Button
-              size="sm"
-              className="relative overflow-hidden group"
-              asChild
-            >
-              <Link href="/sign-up">
-                <span className="relative z-10">Sign Up</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-              </Link>
-            </Button>
           </div>
 
-          {/* Mobile Menu */}
-          <div className="flex items-center space-x-2 md:hidden">
-            <ThemeToggle />
+          {/* Mobile Actions */}
+          <div className="flex items-center md:hidden space-x-2">
+            {loggedIn && (
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/profile">Profile</Link>
+              </Button>
+            )}
+
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden">
+                <Button variant="ghost" size="icon">
                   <Menu className="h-5 w-5" />
                   <span className="sr-only">Toggle menu</span>
                 </Button>
@@ -125,17 +127,18 @@ export function Navbar() {
                   </nav>
 
                   {/* Mobile Actions */}
-                  <div className="flex gap-2 justify-between pt-4 border-t border-border">
-                    <Button
-                      variant="ghost"
-                      className="justify-start border-2 border-border"
-                      asChild
-                    >
-                      <Link href="/login">Login</Link>
-                    </Button>
-                    <Button className="justify-end" asChild>
-                      <Link href="/sign-up">Sign Up</Link>
-                    </Button>
+                  <div className="pt-4 border-t border-border flex flex-col gap-2">
+                    {!loggedIn && (
+                      <>
+                        <Button variant="ghost" className="justify-start border-2 border-border" asChild>
+                          <Link href="/sign-in">Login</Link>
+                        </Button>
+                        <Button className="justify-end" asChild>
+                          <Link href="/sign-up">Sign Up</Link>
+                        </Button>
+                      </>
+                    )}
+                    <ThemeToggle />
                   </div>
                 </div>
               </SheetContent>
